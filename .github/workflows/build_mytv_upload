@@ -1,0 +1,73 @@
+name: build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      local_xwalk: ${{ secrets.LOCAL_XWALK }}
+      # 登录蓝奏云后在控制台运行document.cookie
+      ylogin: ${{ secrets.YLOGIN }}
+      phpdisk_info: ${{ secrets.PHPDISK_INFO }}
+      # 蓝奏云里的文件夹ID
+      lanzou_folder_id: 8294005
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          path: actions
+          
+      - name: Clone Source Code
+        if: ${{ env.commit }}
+        run: |
+          git clone -b https://github.com/102244653/mytv
+          
+      - name: set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Run build with Gradle wrapper
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease -PIS_SO_BUILD=false
+
+      - name: Sign app APK
+        id: sign_app
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: app/build/outputs/apk/release
+          alias: ${{ secrets.ALIAS }}
+          signingKeyBase64: ${{ secrets.KEYSTORE }}
+          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.ALIAS_PASSWORD }}
+        env:
+          # override default build-tools version (29.0.3) -- optional
+          BUILD_TOOLS_VERSION: "34.0.0"
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ steps.sign_app.outputs.signedReleaseFile }}
+          asset_name: my-tv-${{ github.ref_name }}.apk
+          asset_content_type: application/vnd.android.package-archive
