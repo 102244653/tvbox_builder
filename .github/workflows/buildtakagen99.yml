@@ -72,9 +72,7 @@ jobs:
           for file in `find ~ -name "*release*.apk" -print`; do
             mv "$file" apk/TVBox_takagen99-ori_${{ env.tag }}_Release.apk
           done
-          for file in `find ~ -name "*debug*.apk" -print`; do
-            mv "$file" apk/TVBox_takagen99-ori_${{ env.tag }}_Debug.apk
-          done
+          
       - name: Release and Upload Assets
         uses: softprops/action-gh-release@v1
         if: ${{ env.commit }}
@@ -90,4 +88,4 @@ jobs:
 
       - name: Upload App To Lanzou
         if: ${{ env.commit && env.ylogin }}
-        run: python3 ${{ github.workspace }}/actions/.github/workflows/lanzou-api.py "${{ github.workspace }}/TVBoxOSC/apk/" "$lanzou_folder_id" "${{ github.workspace }}/TVBoxOSC/desc.txt"
+        run: python3 ${{ github.workspace }}/actions/.github/workflows/lanzou-api.py "${{ github.workspace }}/TVBoxOSC/apk/" "$lanzou_folder_id"
