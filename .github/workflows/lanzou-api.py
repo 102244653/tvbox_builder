@@ -138,21 +138,21 @@ def upload(dir, folder_id, description=None):
 
 if __name__ == '__main__':
     argv = sys.argv[1:]
-    if len(argv) < 2:
-        logger.error('参数错误,请以这种格式重新尝试\npython lanzou-api.py 需上传的路径 蓝奏云文件夹id 描述文件路径')
+    # if len(argv) < 2:
+    #     logger.error('参数错误,请以这种格式重新尝试\npython lanzou-api.py 需上传的路径 蓝奏云文件夹id 描述文件路径')
     # 需上传的路径
     upload_path = argv[0]
     # 蓝奏云文件夹id
     lzy_folder_id = argv[1]
     desc = None
-    if len(argv) > 2:
-        # 描述文件路径
-        desc_path = argv[2]
-        try:
-            with open(desc_path, 'r', encoding='utf-8') as f:
-                desc = f.read()
-        except Exception as e:
-            logger.error(f"描述文件读取异常 -> {e}")
+    # if len(argv) > 2:
+    #     # 描述文件路径
+    #     desc_path = argv[2]
+    #     try:
+    #         with open(desc_path, 'r', encoding='utf-8') as f:
+    #             desc = f.read()
+    #     except Exception as e:
+    #         logger.error(f"描述文件读取异常 -> {e}")
 
     if login_by_cookie():
-        upload(upload_path, lzy_folder_id, desc)
+        upload(upload_path, lzy_folder_id)
