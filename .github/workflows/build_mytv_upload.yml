@@ -6,7 +6,14 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-      
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - userName: mytv
+            repoUrl: https://github.com/102244653/mytv
+            branchName: main
+            
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -14,9 +21,19 @@ jobs:
           fetch-depth: 0
           path: actions
           
-      - name: Clone Source Code
+      - name: Get The Lastest Commit
+        working-directory: actions
         run: |
-          git clone -b https://github.com/102244653/mytv
+          commit=$(curl -sL ${{ matrix.repoUrl }}/commits/${{ matrix.branchName }} |grep -o '/commit/[a-z0-9]\+' |head -1 | cut -d\/ -f3)
+          if ! grep -q "$commit" ./log/${{ matrix.userName }}.txt; then
+            echo "commit=$commit" >> $GITHUB_ENV
+            echo "commit_id=${commit:0:7}" >> $GITHUB_ENV
+          fi
+
+      - name: Clone Source Code
+        if: ${{ env.commit }}
+        run: |
+          git clone -b ${{ matrix.branchName }} ${{ matrix.repoUrl }}
           
       - name: set up JDK 17
         uses: actions/setup-java@v4
@@ -25,11 +42,13 @@ jobs:
           distribution: 'temurin'
 
       - name: Run build with Gradle wrapper
+        if: ${{ env.commit }}
         run: |
           chmod +x gradlew
           ./gradlew assembleRelease -PIS_SO_BUILD=false
 
       - name: Sign app APK
+        if: ${{ env.commit }}
         id: sign_app
         uses: r0adkll/sign-android-release@v1
         with:
@@ -43,6 +62,7 @@ jobs:
           BUILD_TOOLS_VERSION: "34.0.0"
 
       - name: Create Release
+        if: ${{ env.commit }}
         id: create_release
         uses: actions/create-release@v1
         env:
@@ -54,6 +74,7 @@ jobs:
           prerelease: false
 
       - name: Upload Release Asset
+        if: ${{ env.commit }}
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
