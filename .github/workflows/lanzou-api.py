@@ -144,7 +144,7 @@ if __name__ == '__main__':
     upload_path = argv[0]
     # 蓝奏云文件夹id
     lzy_folder_id = argv[1]
-    desc = None
+    desc = '自用'
     # if len(argv) > 2:
     #     # 描述文件路径
     #     desc_path = argv[2]
@@ -155,4 +155,4 @@ if __name__ == '__main__':
     #         logger.error(f"描述文件读取异常 -> {e}")
 
     if login_by_cookie():
-        upload(upload_path, lzy_folder_id)
+        upload(upload_path, lzy_folder_id, desc)
