@@ -92,4 +92,4 @@ jobs:
 
       - name: Upload App To Lanzou
         if: ${{ env.commit && env.ylogin }}
-        run: python3 ${{ github.workspace }}/actions/.github/lanzou-api.py "${{ github.workspace }}/TVBoxOSC/apk/" "$lanzou_folder_id" "${{ github.workspace }}/TVBoxOSC/desc.txt"
+        run: python3 ${{ github.workspace }}/actions/.github/workflows/lanzou-api.py "${{ github.workspace }}/TVBoxOSC/apk/" "$lanzou_folder_id" "${{ github.workspace }}/TVBoxOSC/desc.txt"
