@@ -1,5 +1,5 @@
 
-name: Build
+name: Build-lanzouyun
 
 on:
   workflow_dispatch:
