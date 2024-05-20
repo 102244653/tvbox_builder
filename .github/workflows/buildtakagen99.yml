@@ -34,14 +34,6 @@ jobs:
             echo "commit=$commit" >> $GITHUB_ENV
             echo "commitS=${commit:0:7}" >> $GITHUB_ENV
           fi
-      - name: Checkout Source Code and Zip
-        if: ${{ env.commit }}
-        run: |
-          git clone ${{ env.upstreamCode }} TVBoxOSC
-          cd TVBoxOSC
-          git checkout ${{ env.commit }}
-          echo "tag=$(git log --date=format:'%Y%m%d-%H%M' --pretty=format:%cd ${{ env.commitS }} -1)" >> $GITHUB_ENV
-          zip -q -x ".git/*" -r ${{ env.commitS }}-source.zip .
       - name: Release Apk Sign
         if: ${{ env.commit }}
         working-directory: TVBoxOSC
@@ -82,7 +74,6 @@ jobs:
           body: ${{ env.commit }}
           files: |
             TVBoxOSC/apk/*
-            TVBoxOSC/${{ env.commitS }}-source.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
