@@ -2,8 +2,8 @@
 name: Build
 
 on:
-  schedule:
-    - cron: 6 */3 * * *
+#  schedule:
+#    - cron: 6 */3 * * *
 #  push:
 #    branches:
 #      - main
