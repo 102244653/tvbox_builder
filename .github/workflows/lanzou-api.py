@@ -71,17 +71,6 @@ def login_by_cookie():
     return False
 
 
-def set_desc(fid, desc):
-    post_data = {'task': 11, 'file_id': fid, 'desc': desc}
-    try:
-        response = requests.post('https://pc.woozooo.com/doupload.php',
-                                 data=post_data, headers=headers, cookies=cookie, verify=False)
-        res = response.json()
-        logger.info(f"文件描述设置结果 -> {res['info']}")
-    except Exception as e:
-        logger.error(f"文件描述设置异常 -> {e}")
-
-
 # 上传文件
 @retry(times=3, interval=15)
 def upload_file(file_dir, folder_id, description):
@@ -90,25 +79,21 @@ def upload_file(file_dir, folder_id, description):
         return
 
     file_name = os.path.basename(file_dir)
-    upload_url = f"https://up.woozooo.com/fileup.php?uid={cookie['ylogin']}"
-    headers['Referer'] = f"https://up.woozooo.com/mydisk.php?item=files&action=index&u={cookie['ylogin']}"
-    post_data = {
-        "task": "1",
-        "vie": "2",
-        "ve": "2",
-        "id": "WU_FILE_0",
-        "folder_id_bb_n": f'{folder_id}',
-        "name": file_name,
-    }
-    files = {'upload_file': (file_name, open(file_dir, "rb"), 'application/octet-stream')}
+    upload_url = "https://pc.woozooo.com/html5up.php"
+    files = {
+        'upload_file': (file_name, open(file_dir, "rb"), 'application/octet-stream'),
+        "task": (None, '1', None),
+        "vie": (None, '2', None),
+        "ve": (None, '2', None),
+        "id": (None, 'WU_FILE_1', None),
+        "folder_id_bb_n": (None, f'{folder_id}', None),
+        "name": (None, file_name, None)
+        }
+    # files = {'upload_file': (file_name, open(file_dir, "rb"), 'application/octet-stream')}
 
-    response = requests.post(upload_url, data=post_data, files=files,
-                             headers=headers, cookies=cookie, verify=False, timeout=3600)
+    response = requests.post(upload_url, files=files, cookies=cookie, verify=False, timeout=3600)
     res = response.json()
     logger.info(f"{file_dir} -> {res['info']}")
-    if res['zt'] == 1:
-        if description is not None:
-            set_desc(int(res["text"][0]["id"]), description)
 
 
 # 上传文件夹内的文件
@@ -145,14 +130,6 @@ if __name__ == '__main__':
     # 蓝奏云文件夹id
     lzy_folder_id = argv[1]
     desc = '自用'
-    # if len(argv) > 2:
-    #     # 描述文件路径
-    #     desc_path = argv[2]
-    #     try:
-    #         with open(desc_path, 'r', encoding='utf-8') as f:
-    #             desc = f.read()
-    #     except Exception as e:
-    #         logger.error(f"描述文件读取异常 -> {e}")
 
     if login_by_cookie():
         upload(upload_path, lzy_folder_id, desc)
