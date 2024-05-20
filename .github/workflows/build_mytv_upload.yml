@@ -43,9 +43,7 @@ jobs:
 
       - name: Run build with Gradle wrapper
         if: ${{ env.commit }}
-        run: |
-          chmod +x gradlew
-          ./gradlew assembleRelease -PIS_SO_BUILD=false
+        run: ./gradlew assembleRelease -PIS_SO_BUILD=false
 
       - name: Sign app APK
         if: ${{ env.commit }}
