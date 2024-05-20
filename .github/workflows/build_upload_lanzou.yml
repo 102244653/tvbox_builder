@@ -8,11 +8,6 @@ on:
 #    branches:
 #      - main
   workflow_dispatch:
-    inputs:
-      arm64_support:
-        description: 'arm64 is supported, but ijk decoder is not supported.'
-        required: false
-        type: boolean
 
 jobs:
   build:
@@ -171,4 +166,4 @@ jobs:
 
       - name: Upload App To Lanzou
         if: ${{ env.commit && env.ylogin }}
-        run: python3 ${{ github.workspace }}/actions/.github/workflows/lanzou-api.py "${{ github.workspace }}/TVBoxOSC/apk/" "$lanzou_folder_id" "${{ github.workspace }}/TVBoxOSC/desc.txt"
+        run: python3 ${{ github.workspace }}/actions/.github/workflows/lanzou-api.py "${{ github.workspace }}/TVBoxOSC/apk/" "$lanzou_folder_id" 
