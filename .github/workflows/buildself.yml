@@ -20,19 +20,12 @@ jobs:
         run: |
           upstreamCode=https://github.com/102244653/taka99tvbox
           echo "upstreamCode=$upstreamCode" >> $GITHUB_ENV
-          commit=$(curl -sL $upstreamCode/commits/main |grep -o '/chengxue2020/takagen99/commit/[a-z0-9]\+' |head -1 | cut -d\/ -f5)
+          commit=$(curl -sL $upstreamCode/commits/main |grep -o '/102244653/taka99tvbox/commit/[a-z0-9]\+' |head -1 | cut -d\/ -f5)
           if ! git log --oneline |grep -q "$commit"; then
             echo "commit=$commit" >> $GITHUB_ENV
             echo "commitS=${commit:0:7}" >> $GITHUB_ENV
           fi
-      - name: Checkout Source Code and Zip
-        if: ${{ env.commit }}
-        run: |
-          git clone ${{ env.upstreamCode }} TVBoxOSC
-          cd TVBoxOSC
-          git checkout ${{ env.commit }}
-          echo "tag=$(git log --date=format:'%Y%m%d-%H%M' --pretty=format:%cd ${{ env.commitS }} -1)" >> $GITHUB_ENV
-          zip -q -x ".git/*" -r ${{ env.commitS }}-source.zip .
+          
       - name: Release Apk Sign
         if: ${{ env.commit }}
         working-directory: TVBoxOSC
@@ -61,10 +54,7 @@ jobs:
           rm -rf apk/
           mkdir -p apk/
           for file in `find ~ -name "*release*.apk" -print`; do
-            mv "$file" apk/TVBox_takagen99_${{ env.tag }}_Release.apk
-          done
-          for file in `find ~ -name "*debug*.apk" -print`; do
-            mv "$file" apk/TVBox_takagen99_${{ env.tag }}_Debug.apk
+            mv "$file" apk/TVBox_xf_${{ env.tag }}_Release.apk
           done
       - name: Release and Upload Assets
         uses: softprops/action-gh-release@v1
