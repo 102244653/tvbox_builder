@@ -54,12 +54,12 @@ jobs:
           # tar -cJf source-${{ env.commitS }}.tar.xz --exclude=.git --exclude=.github *
           zip -q -x ".git/*" -r ${{ matrix.userName }}_${{ env.commit_id }}_src.zip .
 
-      - name: Arm64 Support Beta
-        if: ${{ inputs.arm64_support }}
-        working-directory: TVBoxOSC
-        run: |
-          sed -i "/armeabi-v7a[\'\"]$/s#\$#, 'arm64-v8a'#" app/build.gradle
-          sed -i "/armeabi-v7a[\'\"]$/s#\$#, 'arm64-v8a'#" player/build.gradle
+      # - name: Arm64 Support Beta
+      #   if: ${{ inputs.arm64_support }}
+      #   working-directory: TVBoxOSC
+      #   run: |
+      #     sed -i "/armeabi-v7a[\'\"]$/s#\$#, 'arm64-v8a'#" app/build.gradle
+      #     sed -i "/armeabi-v7a[\'\"]$/s#\$#, 'arm64-v8a'#" player/build.gradle
 
       - name: Add Sign Info
         if: ${{ env.commit }}
